@@ -1,0 +1,32 @@
+{
+  "name": "create-3d-models",
+  "description": "",
+  "keywords": [
+  ],
+  "website": "",
+  "repository": "https://github.com/sanguine-six-dev/create-3d-models",
+  "logo": "",
+  "success_url": "/",
+  "scripts": {
+    "postdeploy": "cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
+  },
+  "env": {
+    "SECRET_TOKEN": {
+      "description": "A secret key for verifying the integrity of signed cookies.",
+      "generator": "secret"
+    },
+    "WEB_CONCURRENCY": {
+      "description": "The number of processes to run.",
+      "value": "5"
+    }
+  },
+  "image": "heroku/nodejs",
+  "addons": [],
+  "environments": {
+    "test": {
+      "scripts": {
+        "test": "bundle exec rake test"
+      }
+    }
+  }
+}
