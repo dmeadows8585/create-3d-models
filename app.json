@@ -10,22 +10,8 @@
   "scripts": {
     "postdeploy": ""
   },
-  "env": {
-    "SECRET_TOKEN": {
-      "description": "A secret key for verifying the integrity of signed cookies.",
-      "generator": "secret"
-    },
-    "WEB_CONCURRENCY": {
-      "description": "The number of processes to run.",
-      "value": "5"
-    }
-  },
   "image": "heroku/nodejs",
   "addons": [],
   "environments": {
-    "test": {
-      "scripts": {
-      }
-    }
   }
 }
