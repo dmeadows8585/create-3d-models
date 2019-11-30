@@ -1,2 +1,2 @@
-web: npm run-script client
-worker: npm start
+server: npm start
+client: npm run-script client
