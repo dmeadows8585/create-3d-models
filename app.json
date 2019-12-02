@@ -1,7 +1,7 @@
 {
   "name": "create-3d-models",
   "description": "",
-  "repository": "https://git.heroku.com/enigmatic-island-74824.git",
+  "repository": "",
   "logo": "",
   "keywords": ["node", "express", "heroku"],
   "image": "heroku/nodejs"
