@@ -1,108 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import PropTypes from "prop-types";
+import axios from "axios";
 
-export interface PayPalButtonProps {
-    amount?: number|string,
-    currency?: number|string,
-    shippingPreference?: "NO_SHIPPING" | "GET_FROM_FILE" | "SET_PROVIDED_ADDRESS",
-    onSuccess?: Function,
-    catchError?: Function,
-    onError?: Function,
-    createOrder?: Function,
-    onApprove?: Function,
-    style?: object,
-    options?: PayPalOptions,
-    onButtonReady?: Function,
-}
+class PayPalButton extends React.Component{
 
-export interface PayPalButtonState {
-    isSdkReady: boolean
-}
-
-export interface PayPalOptions {
-    clientId?: string,
-    merchantId?: string,
-    currency?: number|string,
-    intent?: string,
-    commit?: boolean|string,
-    vault?: boolean|string,
-    component?: string,
-    disableFunding?: string,
-    disableCard?: string,
-    integrationDate?: string,
-    locale?: string,
-    buyerCountry?: string,
-    debug?: boolean|string
-}
-
-interface Window {
-    paypal?: any;
-}
-
-declare var window: Window;
-
-if (window.paypal !== undefined) {
-    console.log(window.paypal);
-}
-
-class PayPalButton extends React.Component<PayPalButtonProps, PayPalButtonState> {
-    static propTypes = {
-        amount: PropTypes.oneOfType([
-            PropTypes.number,
-            PropTypes.string,
-        ]),
-        currency: PropTypes.oneOfType([
-            PropTypes.number,
-            PropTypes.string,
-        ]),
-        shippingPreference: PropTypes.string,
-        onSuccess: PropTypes.func,
-        catchError: PropTypes.func,
-        onError: PropTypes.func,
-        createOrder: PropTypes.func,
-        onApprove: PropTypes.func,
-        style: PropTypes.object,
-        options: PropTypes.shape({
-            clientId: PropTypes.string,
-            merchantId: PropTypes.string,
-            currency: PropTypes.oneOfType([
-                PropTypes.number,
-                PropTypes.string,
-            ]),
-            intent: PropTypes.string,
-            commit: PropTypes.oneOfType([
-                PropTypes.bool,
-                PropTypes.string
-            ]),
-            vault: PropTypes.oneOfType([
-                PropTypes.bool,
-                PropTypes.string
-            ]),
-            component: PropTypes.string,
-            disableFunding: PropTypes.string,
-            disableCard: PropTypes.string,
-            integrationDate: PropTypes.string,
-            locale: PropTypes.string,
-            buyerCountry: PropTypes.string,
-            debug: PropTypes.oneOfType([
-                PropTypes.bool,
-                PropTypes.string
-            ])
-        }),
-        onButtonReady: PropTypes.func,
-    }
-
-    static defaultProps = {
-        style: {},
-        options: {
-            clientId: "sb",
-            currency: "USD"
-        },
-        shippingPreference: "GET_FROM_FILE",
-    }
-
-    constructor(props: PayPalButtonProps) {
+    constructor(props) {
         super(props);
 
         this.state = {
@@ -128,19 +30,17 @@ class PayPalButton extends React.Component<PayPalButtonProps, PayPalButtonState>
         }
     }
 
-    createOrder(data: any, actions: any) {
+    //This function sets up the details of the transaction,
+    //incuding the amount and line item details.
+    createOrder(data, actions) {
 
-        const { currency, options, amount, shippingPreference } = this.props;
+        const { currency, amount, shippingPreference } = this.props;
 
         return actions.order.create({
           purchase_units: [
             {
               amount: {
-                currency_code: currency
-                  ? currency
-                  : options && options.currency
-                  ? options.currency
-                  : "USD",
+                currency_code: currency,
                 value: amount.toString()
               }
             }
@@ -151,11 +51,44 @@ class PayPalButton extends React.Component<PayPalButtonProps, PayPalButtonState>
         });
     }
 
-    onApprove(data: any, actions: any) {
+    //Runs after an order has been completed
+    onApprove(data, actions) {
+
+        const { _id, newTier, selectedListing } = this.props;
+
         return actions.order
             .capture()
             .then((details) => {
-                if (this.props.onSuccess) {
+                if (this.props.onSuccess) { //If the transaction was successful, update the subscriptionTier in the DB
+                    axios.get('/api/userPortal')
+                    .then(res => {
+                        console.log(res);
+                        res.data.find((info) => {
+                            if (info._id === _id) {
+                                let id = info._id;  
+                        
+                                let myListings = info.listings
+
+                                myListings.find((target) => {
+                                    if (target._id === selectedListing) {
+                                        target.subscriptionTier = newTier
+                                    }
+                                })
+
+                                axios.put('/api/userPortal/' + id, {
+                                    "name": info.name,
+                                    "phone": info.phone,
+                                    "emailAddress": info.emailAddress,
+                                    "address": info.address,
+                                    "service": info.service,
+                                    "accessibility": info.accessibility,
+                                    "password": info.password,
+                                    "listings": myListings
+                                })
+                            }
+                        })
+                    });
+
                     return this.props.onSuccess(details, data);
                 }
             })
@@ -193,22 +126,28 @@ class PayPalButton extends React.Component<PayPalButtonProps, PayPalButtonState>
                 {...this.props}
                 createOrder={
                     amount && !createOrder
-                        ? (data: any, actions: any) => this.createOrder(data, actions)
-                        : (data: any, actions: any) => createOrder(data, actions)
+                        ? (data, actions) => this.createOrder(data, actions)
+                        : (data, actions) => createOrder(data, actions)
                 }
                 onApprove={
                     onSuccess
-                        ? (data: any, actions: any) => this.onApprove(data, actions)
-                        : (data: any, actions: any) => onApprove(data, actions)
+                        ? (data, actions) => this.onApprove(data, actions)
+                        : (data, actions) => onApprove(data, actions)
                 }
                 style={style}
             />
         );
     }
 
+    //Loads the Paypal SDK
     addPaypalSdk() {
-        const { options, onButtonReady } = this.props;
-        const queryParams: string[] = [];
+        const { clientId, currency, onButtonReady } = this.props;
+        const queryParams = [];
+
+        const options = {
+            clientId,
+            currency
+        };
 
         Object.keys(options).forEach(k => {
             const name = k.split(/(?=[A-Z])/).join("-").toLowerCase();

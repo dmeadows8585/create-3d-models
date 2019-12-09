@@ -1,8 +1,13 @@
 import React, {Component} from 'react'
 import axios from 'axios'
 import {withRouter} from 'react-router'
+import Modal from 'react-bootstrap/Modal'
+import {useState} from 'react'
+import Button from "react-bootstrap/Button";
+import {render} from "react-dom";
 
 class Login extends Component {
+
     constructor(props) {
         super(props);
 
@@ -11,10 +16,12 @@ class Login extends Component {
             username: '',
             password: '',
             userFieldError: '',
-            passwordFieldError: ''
+            passwordFieldError: '',
+            isloggedin: ''
         };
 
         this.handleLogin = this.handleLogin.bind(this);
+
     };
 
     loginUpdate(userId) {
@@ -38,6 +45,7 @@ class Login extends Component {
     handleLogin = event => {
         event.preventDefault();
         let success = false;
+
         axios.get('/api/userPortal')
             .then(res => {
                 console.log(res);
@@ -49,10 +57,12 @@ class Login extends Component {
                     }
                 });
                 if (success) {
-                    alert('You are logged in');
+                    //alert('You are logged in');
+                    this.state.isloggedin = 'true';
                     this.props.history.push("/Portal");
                 } else {
-                    alert('Incorrect Username or Password');
+                    this.state.isloggedin = 'false';
+                    //alert('Incorrect Username or Password');
                 }
             });
     };
@@ -77,11 +87,14 @@ class Login extends Component {
         )
     };
 
+
     render() {
 
         return (
             <div id="myLoginBox" className="col-md-9">
-                <form class="justify-content-center" onSubmit={this.handleLogin}>
+                <form className="justify-content-center"
+                      onSubmit={this.handleLogin}
+                      >
                     <div class="form-group">
                         <label htmlFor="Login">Username</label>
                         <input
@@ -105,14 +118,69 @@ class Login extends Component {
                         />
                         <div className='text-danger'>{this.state.passwordFieldError}</div>
                     </div>
-                    <button type="submit"
-                            className="btn btn-secondary btn-block">Login
-                    </button>
+                    <Example
+                    isloggedin={this.state.isloggedin}/>
                 </form>
             </div>
         )
     }
 
+}
+
+function Example(props) {
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+    const isloggedin = props.isloggedin;
+
+    if (isloggedin==='true') {
+        return (
+            <>
+                <button type="submit" onClick={handleShow} className="btn btn-secondary btn-block">
+                    Login
+                </button>
+
+                <Modal show={show} onHide={handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Login</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>You've successfully logged in.</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="primary" onClick={handleClose}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </>
+        );
+    } else if (isloggedin === 'false' || isloggedin ===''){
+        return (
+            <>
+                <button type="submit" onClick={handleShow} className="btn btn-secondary btn-block">
+                    Login
+                </button>
+
+                <Modal show={show} onHide={handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Login</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Your combination of username and password was incorrect, please try again.</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="primary" onClick={handleClose}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </>
+        );
+    } else {
+        return (
+            <button type="submit" onClick={handleShow} className="btn btn-secondary btn-block">
+                Login
+            </button>
+        );
+    }
 }
 
 Login = withRouter(Login);

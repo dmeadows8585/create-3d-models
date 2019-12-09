@@ -9,20 +9,20 @@ export default ({data, selectedListing}) => {
 	var url = 'http://'
 	const infoPanel = data
 	.filter(listing => {
-		return listing.id === selectedListing
+		return listing._id === selectedListing
     })
 	.map(listing => { //Maybe include a listing.picture? Is there other info needed?
 		url += listing.data;
 		return(
 
 			<div class='listing-info'>
-					<th colspan='2' class='listing-header'>{listing.name}</th>
+					<th colspan='2' class='listing-header'>{listing.locationName}</th>
 					<tr class='listing-row'>
 						<td class='listing-data'>
 							<img class="table-icon" src={Address} />
 						</td>
 						<td class='listing-data'>
-							{listing.address}
+							{listing.address1}
 						</td>
 
 					</tr>
@@ -31,7 +31,7 @@ export default ({data, selectedListing}) => {
 							<img class="table-icon" src={Phone} />
 						</td>
 						<td class='listing-data'>
-							{listing.phone}
+							{listing.phoneNumber}
 						</td>
 
 					</tr>
@@ -42,7 +42,7 @@ export default ({data, selectedListing}) => {
 						</td>
 						<td class='listing-data'>
 
-							<a href="#" class="text-info" onclick="javascript:window.open('{{url}}', '_blank', 'location=yes')">{listing.link}</a>
+							<a href="#" class="text-info" onclick="javascript:window.open('{{url}}', '_blank', 'location=yes')">{listing.website}</a>
 						</td>
 
 					</tr>

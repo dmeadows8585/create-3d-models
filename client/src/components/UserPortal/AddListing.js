@@ -15,6 +15,7 @@ class AddListing extends React.Component {
             zip: '',
             phoneNumber: '',
             emailAddress: '',
+            website: ''
         };
 
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -68,6 +69,12 @@ class AddListing extends React.Component {
         })
     };
 
+    handleWebsiteChange = event => {
+        this.setState({
+            website: event.target.value
+        })
+    };
+
     handleSubmit = event => {
         event.preventDefault();
         this.findAndUpdate();
@@ -92,7 +99,9 @@ class AddListing extends React.Component {
             "state": this.state.state,
             "zip": this.state.zip,
             "phoneNumber": this.state.phoneNumber,
-            "emailAddress": this.state.emailAddress
+            "emailAddress": this.state.emailAddress,
+            "subscriptionTier": 0
+            "website": this.state.website
         };
 
         //console.log(`listing array before: ${JSON.stringify(listingObj.listings)}`);
@@ -128,7 +137,8 @@ class AddListing extends React.Component {
                     state: "",
                     zip: "",
                     phoneNumber: "",
-                    emailAddress: ""
+                    emailAddress: "",
+                    website: ""
                 });
                 console.log(res);
                 console.log(res.data);
@@ -188,7 +198,7 @@ class AddListing extends React.Component {
                                 onChange={this.handleCityChange}
                             />
                         </div>
-                    
+
 
                         <div class="form-group col-md-3">
                             <label for="state">State</label>
@@ -242,9 +252,22 @@ class AddListing extends React.Component {
                         </div>
                     </div>
 
+                    <div className="form-row d-flex justify-content-center">
+                        <div className="form-group col-md-9">
+                            <label htmlFor="website">Website</label>
+                            <input
+                                type="website"
+                                className="form-control"
+                                id="wesite" placeholder="www.example.com"
+                                value={this.state.website}
+                                onChange={this.handleWebsiteChange}
+                            />
+                        </div>
+                    </div>
+
                     <div class="form-row d-flex justify-content-center">
-                        <button variant="primary" 
-                                size="lg" 
+                        <button variant="primary"
+                                size="lg"
                                 class="btn btn-secondary btn-lg"
                                 type="submit"
                                 >Submit

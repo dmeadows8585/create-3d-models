@@ -1,5 +1,7 @@
-import React, {Component} from 'react'
+import React, {Component, useState} from 'react'
 import axios from 'axios'
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
 
 class Register extends Component {
     constructor(props) {
@@ -17,7 +19,8 @@ class Register extends Component {
             firstFieldError: '',
             lastFieldError: '',
             passFieldError: '',
-            pass2FieldError: ''
+            pass2FieldError: '',
+            registration_successful: '',
         };
     };
 
@@ -43,14 +46,17 @@ class Register extends Component {
                         console.log(res);
                         console.log(res.data);
                         if (res.status === 200) {
-                            alert(`You have been successfully registered`);
+                            this.state.registration_successful = 'true';
+                            //alert(`You have been successfully registered`);
                         }
                     }).catch((error) => {
                     console.log(error.response);
-                    alert(`Registration was not successful!`);
+                    this.state.registration_successful = 'false';
+                    //alert(`Registration was not successful!`);
                 })
             }).catch((error) => {
             console.log(error.response);
+            this.state.registration_successful = 'false';
             alert(`Registration was not successful!`);
         });
     };
@@ -204,12 +210,67 @@ class Register extends Component {
                             <div className='text-danger'>{this.state.pass2FieldError}</div>
                         </div>
                     </div>
-                    <button type="submit"
-                            className="btn btn-primary btn-block">Register
-                    </button>
+                    <Modal_display
+                        registration_successful={this.state.registration_successful}/>
                 </form>
             </div>
         )
+    }
+}
+
+function Modal_display(props) {
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+    const registration_successful = props.registration_successful;
+
+    if (registration_successful==='true') {
+        return (
+            <>
+                <button type="submit" onClick={handleShow} className="btn btn-secondary btn-block">
+                    Register
+                </button>
+
+                <Modal show={show} onHide={handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Registered</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Congratulations, you've successfully registered!</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="primary" onClick={handleClose}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </>
+        );
+    } else if (registration_successful === 'false' || registration_successful ===''){
+        return (
+            <>
+                <button type="submit" onClick={handleShow} className="btn btn-secondary btn-block">
+                    Register
+                </button>
+
+                <Modal show={show} onHide={handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Registration</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Please check your forms again, you have not been registered.</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="primary" onClick={handleClose}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </>
+        );
+    } else {
+        return (
+            <button type="submit" onClick={handleShow} className="btn btn-secondary btn-block">
+                Register
+            </button>
+        );
     }
 }
 

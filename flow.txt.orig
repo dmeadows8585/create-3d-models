@@ -1,0 +1,50 @@
+Hello fellow group members! 
+
+This file is for practice only!
+
+Please update this file with your name, as a way to "check in" that 
+you understand how to use GitHub and utilize the git flow.
+
+Place your name here:
+
+<<<<<<< HEAD
+1.  Ken Wilkinson (This name is added after eliminating local fork)
+=======
+1.  Ken Wilkinson (This text has been added after creating a branch)
+>>>>>>> checkout
+
+*** Prior to any code development, please create a branch in your local 
+working directory to perform code development ***
+
+Work flow:
+
+1.  Use:
+    git branch [branch_name] 
+
+    to create your own, unique branch from the origin master branch.  This will be used to develop
+    your own code for different user stories.  
+
+2.  After testing your code, use:
+
+    git merge 
+    
+    to eliminate your branch locally. 
+ 
+3.   After you finish your code development, use:
+
+    git diff 
+
+    to manually check any differences in your code from the master origin.
+
+4.  If you do not see any major concerns at first, use the command:
+
+    git add .
+
+    to add all your local changes to the staging repository on your computer
+
+4.  The next step is to use:
+
+    git commit -m '[Your message here]'
+
+    to add your file to the main repository
+

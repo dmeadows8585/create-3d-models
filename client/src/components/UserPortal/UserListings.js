@@ -1,79 +1,68 @@
-/* Adapted from Bootcamp4 BuildingList.js
- * I thought it could be useful to have the listings as
- * in a table. Clicking on one of the listings
- * displays the listing data in an adjacent infoBox. The infoBox
- * is handled by the ViewListing component.
- */
-
-
 import React from "react"
 import ViewListing from './ViewListing'
 import './UserListings.css';
+import axios from 'axios'
 
-class UserListings extends React.Component{
+class UserListings extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-        //filterText: '',
-        selectedListing: 0,
-        //data: this.props
+            listings: [],
+            selectedListing: 0,
         };
+
+        this.getCurrentInformation();
     }
 
     selectedUpdate(id) {
         this.setState({
-          selectedListing: id
-        })
-      }
+            selectedListing: id
+        });
+    }
+
+    getCurrentInformation() {
+        let listings;
+        axios.get('/api/userPortal/' + sessionStorage.getItem(this.key))
+            .then(res => {
+                console.log(res);
+
+                listings = res.data.listings
+                this.setState({
+                    listings: res.data.listings
+                });
+            });
+    }
 
     render() {
 
-        //---------------------------------TEST DATA---------------------------------------------//
-        var data = [
-        {
-            id: 1,
-            name: 'Academic Advisement - Farrior Hall',
-            address: '100 Fletcher Dr, Gainesville, FL 32611, United States',
-            phone: 'Test phone number 1',
-            link: 'www.one.uf'
-        },
-        {
-            id: 2,
-            name: 'Plant Pathology Research Lab 2',
-            address: 'Test',
-            phone: 'Test phone number 2',
-            link: 'google.com'
-        },
-        ]
-        //-----------------------------------------------------------------------------------------//
-
         //I left the text filtering functionality in here commented out in case we want to use it
-		const listingList = data
-		/*.filter(listing => {
-			return listing.name.toLowerCase().indexOf(this.props.filterText.toLowerCase()) >= 0
-		})*/
-		.map(listing => {
-			return (
-				<tr key={listing.id} onClick={() => this.selectedUpdate(listing.id)}>
-					<td> {listing.name} </td>
-				</tr>
-			);
-		});
+        let data = this.state.listings;
+        let listingList = data
+        /*.filter(listing => {
+            return listing.name.toLowerCase().indexOf(this.props.filterText.toLowerCase()) >= 0
+        })*/
+            .map(listing => {
+                return (
+                    <tr key={listing._id} onClick={() => this.selectedUpdate(listing._id)}>
+                        <td> {listing.locationName} </td>
+                    </tr>
+                );
+            });
 
-		return (
-    
+        return (
+
             <div class="row">
                 <div class="col-md-3" id='column1'>
                     <table class="table table-hover">
                         <thead>
-                            <tr>
-                                <th scope="col">My Listings</th>
-                            </tr>
+                        <tr>
+                            <th scope="col">My Listings</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>{listingList}</td>
-                            </tr>
+                        <tr>
+                            <td>{listingList}</td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
@@ -84,7 +73,8 @@ class UserListings extends React.Component{
                     />
                 </div>
             </div>
-		)
-    }    
+        )
+    }
 }
+
 export default UserListings;
