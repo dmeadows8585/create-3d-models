@@ -100,7 +100,7 @@ class AddListing extends React.Component {
             "zip": this.state.zip,
             "phoneNumber": this.state.phoneNumber,
             "emailAddress": this.state.emailAddress,
-            "subscriptionTier": 0
+            "subscriptionTier": 0,
             "website": this.state.website
         };
 

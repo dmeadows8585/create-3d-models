@@ -18,7 +18,7 @@ var userPortalSchema = new Schema({
         zip: {type: String},
         phoneNumber: {type: String},
         emailAddress: {type: String},
-        subscriptionTier: {type: Number, required: true}
+        subscriptionTier: {type: Number, required: true},
         website: {type: String},
     }],
     start_hour: {
