@@ -1,6 +1,8 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './AddListing.css';
 import axios from 'axios';
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
 
 class AddListing extends React.Component {
     constructor(props) {
@@ -15,7 +17,8 @@ class AddListing extends React.Component {
             zip: '',
             phoneNumber: '',
             emailAddress: '',
-            website: ''
+            website: '',
+            has_submit: ''
         };
 
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -88,6 +91,10 @@ class AddListing extends React.Component {
             });
     };
 
+    refreshPage() {
+        window.location.reload();
+    }
+
     updatelistings(listingObj) {
         let id = listingObj._id;
         let listingsArray = [];
@@ -104,7 +111,6 @@ class AddListing extends React.Component {
             "website": this.state.website
         };
 
-        //console.log(`listing array before: ${JSON.stringify(listingObj.listings)}`);
         let listingsString = "";
         let arrayString = "";
         if (listingObj.listings !== null) {
@@ -127,7 +133,9 @@ class AddListing extends React.Component {
             "listings": myListings
         })
             .then(res => {
-                alert(`The listing has been added`);
+                this.state.has_submit = 'true';
+                this.setState({has_submit:this.state.has_submit});
+                //alert(`The listing has been added`);
 
                 this.setState({
                     locationName: "",
@@ -142,14 +150,15 @@ class AddListing extends React.Component {
                 });
                 console.log(res);
                 console.log(res.data);
-            })
+            });
+        this.refreshPage();
     }
 
     render() {
         return (
             <div class="form-container">
                 <form class="listing-form" onSubmit={this.handleSubmit}>
-                    <div class="form-row d-flex justify-content-center" >
+                    <div class="form-row d-flex justify-content-center">
                         <div class="form-group col-md-9">
                             <label for="name">Location Name</label>
                             <input
@@ -224,7 +233,7 @@ class AddListing extends React.Component {
                             />
                         </div>
 
-                        </div>
+                    </div>
 
                     <div class="form-row d-flex justify-content-center">
                         <div class="form-group col-md-9">
@@ -266,16 +275,76 @@ class AddListing extends React.Component {
                     </div>
 
                     <div class="form-row d-flex justify-content-center">
-                        <button variant="primary"
-                                size="lg"
-                                class="btn btn-secondary btn-lg"
-                                type="submit"
-                                >Submit
-                        </button>
+                        <Modal_display
+                            has_submit={this.state.has_submit}/>
                     </div>
                 </form>
             </div>
         )
+    }
+}
+
+function Modal_display(props) {
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+    const has_submit = props.has_submit;
+
+    if (has_submit==='true') {
+        return (
+            <>
+                <button variant="primary"
+                        size="lg"
+                        className="btn btn-secondary btn-lg"
+                        type="submit"
+                        onClick={handleShow}
+                >Submit
+                </button>
+
+                <Modal show={show} onHide={handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Login</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Your listing has been added successfully!</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="primary" onClick={handleClose}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </>
+        );
+    } else if (has_submit === 'false' || has_submit ===''){
+        return (
+            <>
+                <button variant="primary"
+                        size="lg"
+                        className="btn btn-secondary btn-lg"
+                        type="submit"
+                        onClick={handleShow}
+                >Submit
+                </button>
+
+                <Modal show={show} onHide={handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Login</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Your listing has not been added, please check your form and try again.</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="primary" onClick={handleClose}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </>
+        );
+    } else {
+        return (
+            <button type="submit" onClick={handleShow} className="btn btn-secondary btn-block">
+                Login
+            </button>
+        );
     }
 }
 

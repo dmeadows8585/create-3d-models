@@ -1,0 +1,36 @@
+div#customUserInfo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30rem
+}
+
+div#customUserInfo h1 {
+    font-size: 5vh;
+}
+
+div#customUserInfo p {
+    font-size: 3vh;
+}
+div#v-pills-user-information.tab-pane.fade.show.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 500px;
+}
+img#userAddress.table-icon {
+    float: right;
+}
+
+img#userIcon.table-icon {
+    float: right;
+}
+
+img#userPhone.table-icon {
+    float: right;
+}
+
+img#userEmail.table-icon {
+    float: right;
+}
+

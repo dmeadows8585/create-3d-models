@@ -18,9 +18,12 @@ router.route('/')
 
 router.route('/:userByID')
     .get(userPortal.read)
-    .put(userPortal.update)
-    .delete(userPortal.delete);
+    .put(userPortal.update);
+
+router.route('/:listingByID')
+    .delete(userPortal.deleteListing);
 
 router.param('userByID', userPortal.userByID);
+router.param('listingByID', userPortal.listingByID);
 
 module.exports = router;

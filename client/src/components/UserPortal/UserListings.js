@@ -25,8 +25,9 @@ class UserListings extends React.Component {
         axios.get('/api/userPortal/' + sessionStorage.getItem(this.key))
             .then(res => {
                 console.log(res);
+                console.log(res.data);
 
-                listings = res.data.listings
+                listings = res.data.listings;
                 this.setState({
                     listings: res.data.listings
                 });

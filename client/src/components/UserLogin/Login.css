@@ -23,7 +23,7 @@ div#myLoginBox.col-md-9{
 div#myLoginBox.justify-content-center.col{
     border-style: solid;
     border-width: 3px;
-    border-color: #157ffb;
+    border-color: #afd8e5;
     border-radius: 10px 10px 10px 10px;
     margin-top: 2%;
     margin-bottom: 2%;
@@ -80,6 +80,21 @@ div#loginContainer.container {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     background: #343a40
+}
+a#UserLoginRegister-tab-Register.nav-item.nav-link {
+    color: #afd8e5;
+}
+
+a#UserLoginRegister-tab-Register.nav-item.nav-link.active {
+    color: #495057;
+}
+
+a#UserLoginRegister-tab-Login.nav-item.nav-link {
+    color: #afd8e5;
+}
+
+a#UserLoginRegister-tab-Login.nav-item.nav-link.active {
+    color: #495057;
 }
 
 .close {

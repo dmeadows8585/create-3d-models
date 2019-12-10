@@ -57,11 +57,12 @@ class Login extends Component {
                     }
                 });
                 if (success) {
-                    //alert('You are logged in');
                     this.state.isloggedin = 'true';
+                    this.setState({isloggedin:this.state.isloggedin});
                     this.props.history.push("/Portal");
                 } else {
                     this.state.isloggedin = 'false';
+                    this.setState({isloggedin:this.state.isloggedin});
                     //alert('Incorrect Username or Password');
                 }
             });
@@ -94,7 +95,7 @@ class Login extends Component {
             <div id="myLoginBox" className="col-md-9">
                 <form className="justify-content-center"
                       onSubmit={this.handleLogin}
-                      >
+                >
                     <div class="form-group">
                         <label htmlFor="Login">Username</label>
                         <input
@@ -119,7 +120,7 @@ class Login extends Component {
                         <div className='text-danger'>{this.state.passwordFieldError}</div>
                     </div>
                     <Example
-                    isloggedin={this.state.isloggedin}/>
+                        isloggedin={this.state.isloggedin}/>
                 </form>
             </div>
         )
@@ -134,7 +135,7 @@ function Example(props) {
     const handleShow = () => setShow(true);
     const isloggedin = props.isloggedin;
 
-    if (isloggedin==='true') {
+    if (isloggedin === 'true') {
         return (
             <>
                 <button type="submit" onClick={handleShow} className="btn btn-secondary btn-block">
@@ -154,7 +155,7 @@ function Example(props) {
                 </Modal>
             </>
         );
-    } else if (isloggedin === 'false' || isloggedin ===''){
+    } else if (isloggedin === 'false' || isloggedin === '') {
         return (
             <>
                 <button type="submit" onClick={handleShow} className="btn btn-secondary btn-block">

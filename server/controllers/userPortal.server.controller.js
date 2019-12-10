@@ -2,36 +2,36 @@
 var mongoose = require('mongoose'),
     UserPortal = require('../models/userPortal.server.model.js');
 
-/* Create an user contact information */
+/* Create an User Portal information account*/
 exports.create = function (req, res) {
 
-    /* Instantiate an user contact information*/
-    var userContactInfo = new UserPortal(req.body);
+    /* Instantiate an User Portal account*/
+    var userInfo = new UserPortal(req.body);
 
-    /* Then save the contact information */
-    userContactInfo.save(function (err) {
+    /* Then save the User Portal information */
+    userInfo.save(function (err) {
         if (err) {
             console.log(err);
             res.status(400).send(err);
         } else {
-            res.json(userContactInfo);
-            console.log(userContactInfo);
+            res.json(userInfo);
+            console.log(userInfo);
         }
     });
 };
 
-/* Show the current contact information */
+/* Show the current Portal information */
 exports.read = function (req, res) {
-    /* send back the contact information as json from the request */
-    res.json(req.userContactInfo);
+    /* send back the information as json from the request */
+    res.json(req.userInfo);
 };
 
-/* Update user contact info - note the order in which this function is called by the router*/
+/* Update User Portal info - note the order in which this function is called by the router*/
 exports.update = function (req, res) {
-    var userContactInfo = req.userContactInfo;
+    var userInfo = req.userInfo;
 
-    /* Replace the contact info properties with the new properties found in req.body */
-    UserPortal.findByIdAndUpdate(userContactInfo._id, {
+    /* Replace the info properties with the new properties found in req.body */
+    UserPortal.findByIdAndUpdate(userInfo._id, {
         name: req.body.name,
         address: req.body.address,
         phone: req.body.phone,
@@ -42,47 +42,84 @@ exports.update = function (req, res) {
         .then(result => {
             if (!result) {
                 return res.status(404).send({
-                    message: "Note not found with id " + req.params.req.userContactInfo._id
+                    message: "Note not found with id " + req.params.req.userInfo._id
                 });
             }
             res.send(result);
         }).catch(err => {
         if (err.kind === 'ObjectId') {
             return res.status(404).send({
-                message: "Note not found with id " + req.params.req.userContactInfo._id
+                message: "Note not found with id " + req.params.req.userInfo._id
             });
         }
         return res.status(500).send({
-            message: "Error updating note with id " + req.params.req.userContactInfo._id
+            message: "Error updating note with id " + req.params.req.userInfo._id
         });
     });
 };
 
-/* Delete the user's contact info */
+/* Delete the User Portal account */
 exports.delete = function (req, res) {
-    var userContactInfo = req.userContactInfo;
-    UserPortal.findByIdAndRemove(userContactInfo._id)
+    var userInfo = req.userInfo;
+    UserPortal.findByIdAndRemove(userInfo._id)
         .then(result => {
             if (!result) {
                 return res.status(404).send({
-                    message: "contact info not found with id " + userContactInfo._id
+                    message: "user info not found with id " + userInfo._id
                 });
             }
-            res.send({message: "contact info deleted successfully!"});
+            res.send({message: "user info deleted successfully!"});
         }).catch(err => {
         if (err.kind === 'ObjectId' || err.name === 'NotFound') {
             return res.status(404).send({
-                message: "Note not found with id " + userContactInfo._id
+                message: "Note not found with id " + userInfo._id
             });
         }
         return res.status(500).send({
-            message: "Could not delete contact info with id " + userContactInfo._id
+            message: "Could not delete user info with id " + userInfo._id
         });
     });
 
 };
 
-/* Retrieve all the user's contact info, sorted alphabetically by userId */
+/* Delete a user listing */
+exports.deleteListing = function (req, res) {
+    var userInfo = req.userInfo;
+    console.log(userInfo[0]._id);
+    console.log(userInfo);
+    console.log(req.userlisting._id);
+    UserPortal.findOneAndUpdate(
+        {_id: userInfo[0]._id},
+        {$pull: {listings: {_id: req.userlisting._id}}},
+
+        {new: true},
+        function (err) {
+            if (err) {
+                console.log(err)
+            }
+        }
+    )
+        .then(result => {
+            if (!result) {
+                return res.status(404).send({
+                    message: "user listing not found with id " + userInfo._id
+                });
+            }
+            res.send({message: "user listing deleted successfully!"});
+        }).catch(err => {
+        if (err.kind === 'ObjectId' || err.name === 'NotFound') {
+            return res.status(404).send({
+                message: "Note not found with id " + userInfo._id
+            });
+        }
+        return res.status(500).send({
+            message: "Could not delete listing info with id " + userInfo._id
+        });
+    });
+
+};
+
+/* Retrieve all the user's info, sorted alphabetically by userId */
 exports.list = function (req, res) {
     UserPortal.find()
         .sort({userId: 1})
@@ -90,20 +127,42 @@ exports.list = function (req, res) {
             res.send(addresses);
         }).catch(err => {
         res.status(500).send({
-            message: err.message || "Some error occurred while retrieving contact infomation."
+            message: err.message || "Some error occurred while retrieving user infomation."
         });
     });
 };
 
 /*
-  Middleware: find contact information by its ID, then pass it to the next request handler.
+  Middleware: find user information by its ID, then pass it to the next request handler.
  */
 exports.userByID = function (req, res, next, id) {
-    UserPortal.findById(id).exec(function (err, userContactInfo) {
+    UserPortal.findById(id).exec(function (err, userInfo) {
         if (err) {
             res.status(400).send(err);
         } else {
-            req.userContactInfo = userContactInfo;
+            req.userInfo = userInfo;
+            next();
+        }
+    });
+};
+
+/*
+  Middleware: find user information by its ID, then pass it to the next request handler.
+ */
+exports.listingByID = function (req, res, next, id) {
+    UserPortal.find({"listings._id": id}).exec(function (err, userInfo) {
+        if (err) {
+            res.status(400).send(err);
+        } else {
+            console.log(id);
+
+            for (let i = 0; i < userInfo[0].listings.length; i++) {
+                if (userInfo[0].listings[i]._id == id) {
+                    req.userlisting = userInfo[0].listings[i];
+                    req.userInfo = userInfo;
+                }
+            }
+            console.log(req.userInfo);
             next();
         }
     });
