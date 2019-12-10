@@ -11,7 +11,7 @@
     "map": "cd client/src/components/models && npm run-script start",
     "dev": "concurrently \"node server/server.js\" \"cd client && npm run start\"",
     "build": "cd client && npm build",
-    "start": "node server/server.js",
+    "start": "node server/server.js && cd client/src/components/models && npm run-script start",
     "heroku-postbuild": "cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
   },
   "repository": {
