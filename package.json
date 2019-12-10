@@ -8,9 +8,10 @@
     "install-all": "concurrently \"npm install\" \"cd client && npm install\"",
     "client": "cd client && npm start",
     "server": "nodemon server/server.js",
+    "map": "cd client/src/components/models && npm run-script run start",
     "dev": "concurrently \"node server/server.js\" \"cd client && npm run start\"",
     "build": "cd client && npm build",
-    "start": "node server/server.js",
+    "start": "node server/server.js && cd",
     "heroku-postbuild": "cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
   },
   "repository": {
